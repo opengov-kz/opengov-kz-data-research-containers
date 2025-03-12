@@ -45,7 +45,7 @@
     ```
 
 ## Connect Superset to Warehouse DB
-Access superset's WebUI.
+Access superset's WebUI on localhost:8080.
 1. In the settings press Database Connections
     ![](md/createdb-access-webui.png)
     Press Create database connection button
