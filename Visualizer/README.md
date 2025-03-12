@@ -90,18 +90,18 @@ Access superset's WebUI on localhost:8080.
 ![](md/superset-createdb-choose-postgres.png)
 
 3. Configure Connection
-Here in hostnames we pass warehouse, because Superset and Warehouse db are in the same dockerc network and Warehouse's hostname is `warehouse`
+    Here in hostnames we pass warehouse, because Superset and Warehouse db are in the same docker network and Warehouse's hostname is `warehouse`
 
-![](md/superset-createdb-configure-postgres-1.png)
+    ![](md/superset-createdb-configure-postgres-1.png)
 
 
 4. Here you can tinker connection options for you
 
-![](md/superset-createdb-configure-postgres-2.png)
+    ![](md/superset-createdb-configure-postgres-2.png)
 
 5. Here's the expected output
 
-![](md/superset-createdb-output.png)
+    ![](md/superset-createdb-output.png)
 
 ## Connect PGAdmin to Warehouse DB
 
