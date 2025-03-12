@@ -1,5 +1,36 @@
 # Visualizer
 
+## Meta
+
+1.
+    Superset
+    - hostname: superset
+    - ports:
+        - exposed: 8080
+        - in-container: 8088
+    - username: admin
+    - email: admin@admin.com
+    - password: admin
+2.
+    PostgreSQL
+    - hostname: warehouse
+    - ports:
+        - exposed: 5432
+        - in-container: 5432
+    - username: warehouse
+    - password: warehouse
+    - dbname: warehouse
+3.
+    PGAdmin
+    - hostname: pgadmin
+    - ports:
+        - exposed: 5050
+        - in-container: 80
+    - email: admin@admin.com
+    - password: admin
+
+P.S If you need to access db directly just use provided credentials, but connect on localhost:5432
+
 ## Setup
 
 1. Clone or download this repo and change directory to Visualizer
