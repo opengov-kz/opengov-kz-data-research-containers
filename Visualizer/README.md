@@ -78,7 +78,9 @@ Here in hostnames we pass warehouse, because Superset and Warehouse db are in th
 3. Configure connection
     
     just `warehouse` everything
-    ![](md/pgadmin-connectdb-configure-2.png)
+
+    Here in hostnames we pass warehouse, because Superset and Warehouse db are in the same dockerc network and Warehouse's hostname is `warehouse`
+        ![](md/pgadmin-connectdb-configure-2.png)
 
 4. Configure connection parameters
     ![](md/pgadmin-connectdb-configure-3.png)
