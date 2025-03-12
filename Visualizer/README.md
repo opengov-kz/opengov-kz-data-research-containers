@@ -43,3 +43,25 @@
     visualizer-superset-1    visualizer-superset    "/superset-init.sh"      superset    19 minutes ago   Up 19 minutes (healthy)   0.0.0.0:8080->8088/tcp, [::]:8080->8088/tcp
     visualizer-warehouse-1   postgres:13            "docker-entrypoint.s…"   warehouse   30 minutes ago   Up 30 minutes (healthy)   5432/tcp
     ```
+
+## Connect Superset to Warehouse DB
+Access superset's WebUI.
+1. In the settings press Database Connections
+    ![](md/createdb-access-webui.png)
+    Press Create database connection button
+    After that you should see pop-up window
+    ![](md/createdb-press-createdb-button.png)
+
+2. Choose postgres in pop-up window
+![](md/createdb-choose-postgres.png)
+
+3. Configure Connection
+Here in hostnames we pass warehouse, because Superset and Warehouse db are in the same dockerc network and Warehouse's hostname is `warehouse`
+![](md/createdb-configure-postgres-1.png)
+
+
+4. Here you can tinker connection options for you
+![](md/createdb-configure-postgres-2.png)
+
+5. Here's the expected output
+![](md/createdb-output.png)
