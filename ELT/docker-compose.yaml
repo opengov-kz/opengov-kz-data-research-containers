@@ -82,22 +82,24 @@ x-airflow-common:
 services:
   ## Client
 
-  client-pgadmin:
+  pgadmin:
     image: dpage/pgadmin4:9.1.0
+    container_name: ${PGADMIN_CONTAINER_NAME}
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
       PGADMIN_DEFAULT_PASSWORD: admin
     ports:
-      - "5050:80"
+      - ${CLIENT_PGADMIN_PORT}:80
     restart: always
   client-postgres:
     image: postgres:13
+    container_name: ${CLIENT_POSTGRES_CONTAINER_NAME}
     environment:
       POSTGRES_USER: client
       POSTGRES_PASSWORD: client
       POSTGRES_DB: client
     ports:
-      - 5454:5432
+      - ${CLIENT_POSTGRES_PORT}:5432
     volumes:
       - client-postgres-db-volume:/var/lib/postgresql/data
     healthcheck:
@@ -110,6 +112,7 @@ services:
   ## Airflow
   airflow-postgres:
     image: postgres:13
+    container_name: ${AIRFLOW_POSTGRES_CONTAINER_NAME}
     environment:
       POSTGRES_USER: airflow
       POSTGRES_PASSWORD: airflow
@@ -127,18 +130,20 @@ services:
     # Redis is limited to 7.2-bookworm due to licencing change
     # https://redis.io/blog/redis-adopts-dual-source-available-licensing/
     image: redis:7.2-bookworm
-    expose:
-      - 6379
+    container_name: ${AIRFLOW_REDIS_CONTAINER_NAME}
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 10s
       timeout: 30s
       retries: 50
       start_period: 30s
+    ports:
+      - ${AIRFLOW_REDIS_PORTS}:6379
     restart: always
 
   airflow-webserver:
     <<: *airflow-common
+    container_name: ${AIRFLOW_WEBSERVER_CONTAINER_NAME}
     command: webserver
     ports:
       - "8080:8080"
@@ -156,6 +161,7 @@ services:
 
   airflow-scheduler:
     <<: *airflow-common
+    container_name: ${AIRFLOW_SCHEDULER_CONTAINER_NAME}
     command: scheduler
     healthcheck:
       test: [ "CMD", "curl", "--fail", "http://localhost:8974/health" ]
@@ -171,6 +177,7 @@ services:
 
   airflow-worker:
     <<: *airflow-common
+    container_name: ${AIRFLOW_WORKER_CONTAINER_NAME}
     command: celery worker
     healthcheck:
       # yamllint disable rule:line-length
@@ -194,6 +201,7 @@ services:
 
   airflow-triggerer:
     <<: *airflow-common
+    container_name: ${AIRFLOW_TRIGGERER_CONTAINER_NAME}
     command: triggerer
     healthcheck:
       test: [ "CMD-SHELL", 'airflow jobs check --job-type TriggererJob --hostname "$${HOSTNAME}"' ]
@@ -209,6 +217,7 @@ services:
 
   airflow-init:
     <<: *airflow-common
+    container_name: ${AIRFLOW_INIT_CONTAINER_NAME}
     entrypoint: /bin/bash
     # yamllint disable rule:line-length
     command:
@@ -273,6 +282,7 @@ services:
 
   airflow-cli:
     <<: *airflow-common
+    container_name: ${AIRFLOW_CLI_CONTAINER_NAME}
     profiles:
       - debug
     environment:
@@ -289,11 +299,12 @@ services:
   # See: https://docs.docker.com/compose/profiles/
   flower:
     <<: *airflow-common
+    container_name: ${FLOWER_CONTAINER_NAME}
     command: celery flower
     profiles:
       - flower
     ports:
-      - "5555:5555"
+      - ${FLOWER_PORT}:5555
     healthcheck:
       test: [ "CMD", "curl", "--fail", "http://localhost:5555/" ]
       interval: 30s
@@ -309,12 +320,15 @@ services:
   # Warehouse DB
   warehouse-postgres:
     image: postgres:13
+    container_name: ${WAREHOUSE_POSTGRES_CONTAINER_NAME}
     environment:
       POSTGRES_USER: warehouse
       POSTGRES_PASSWORD: warehouse
       POSTGRES_DB: warehouse
     volumes:
       - warehouse-postgres-db-volume:/var/lib/postgresql/data
+    ports:
+      - ${WAREHOUSE_POSTGRES_PORT}:5432
     healthcheck:
       test: [ "CMD", "pg_isready", "-U", "warehouse" ]
       interval: 10s
@@ -323,6 +337,7 @@ services:
     restart: always
   # Superset
   superset:
+    container_name: ${SUPERSET_CONTAINER_NAME}
     build:
       context: ./superset
       dockerfile: Dockerfile
@@ -332,7 +347,7 @@ services:
       ADMIN_EMAIL: admin@admin.com
       ADMIN_PASSWORD: admin
     ports:
-      - 8081:8088
+      - ${SUPERSET_PORT}:8088
     volumes:
       - ./superset_home:/app/superset_home
 
