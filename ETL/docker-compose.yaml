@@ -138,7 +138,7 @@ services:
       retries: 50
       start_period: 30s
     ports:
-      - ${AIRFLOW_REDIS_PORTS}:6379
+      - ${AIRFLOW_REDIS_PORT}:6379
     restart: always
 
   airflow-webserver:
