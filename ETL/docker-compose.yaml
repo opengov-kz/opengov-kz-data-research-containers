@@ -45,9 +45,9 @@ x-airflow-common:
     dockerfile: Dockerfile
   environment: &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
-    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow-postgres/airflow
-    AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@airflow-postgres/airflow
-    AIRFLOW__CELERY__BROKER_URL: redis://:@airflow-redis:6379/0
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${AIRFLOW_POSTGRES_USER}:${AIRFLOW_POSTGRES_PASSWORD}@${AIRFLOW_POSTGRES_HOST}/${AIRFLOW_POSTGRES_DB}
+    AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://${AIRFLOW_POSTGRES_USER}:${AIRFLOW_POSTGRES_PASSWORD}@${AIRFLOW_POSTGRES_HOST}/${AIRFLOW_POSTGRES_DB}
+    AIRFLOW__CELERY__BROKER_URL: redis://${REDIS_USER:-}:${REDIS_PASSWORD:-}@${AIRFLOW_REDIS_HOST}:${AIRFLOW_REDIS_PORT}/0
     AIRFLOW__CORE__FERNET_KEY: ''
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
     AIRFLOW__CORE__LOAD_EXAMPLES: 'true'
@@ -68,7 +68,7 @@ x-airflow-common:
     - ${AIRFLOW_PROJ_DIR:-.}/logs:/opt/airflow/logs
     - ${AIRFLOW_PROJ_DIR:-.}/config:/opt/airflow/config
     - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
-  user: "${AIRFLOW_UID:-50000}:0"
+  user: "${AIRFLOW_UID:-1000}:0"
   depends_on: &airflow-common-depends-on
     airflow-redis:
       condition: service_healthy
@@ -94,6 +94,7 @@ services:
   client-postgres:
     image: postgres:13
     container_name: ${CLIENT_POSTGRES_CONTAINER_NAME}
+    hostname: ${CLIENT_POSTGRES_HOST:-client-postgres}
     environment:
       POSTGRES_USER: ${CLIENT_POSTGRES_USER}
       POSTGRES_PASSWORD: ${CLIENT_POSTGRES_PASSWORD}
@@ -113,6 +114,7 @@ services:
   airflow-postgres:
     image: postgres:13
     container_name: ${AIRFLOW_POSTGRES_CONTAINER_NAME}
+    hostname: ${AIRFLOW_POSTGRES_HOST:-airflow-postgres}
     environment:
       POSTGRES_USER: ${AIRFLOW_POSTGRES_USER}
       POSTGRES_PASSWORD: ${AIRFLOW_POSTGRES_PASSWORD}
@@ -131,6 +133,7 @@ services:
     # https://redis.io/blog/redis-adopts-dual-source-available-licensing/
     image: redis:7.2-bookworm
     container_name: ${AIRFLOW_REDIS_CONTAINER_NAME}
+    hostname: ${AIRFLOW_REDIS_HOST:-airflow-redis}
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 10s
@@ -144,6 +147,7 @@ services:
   airflow-webserver:
     <<: *airflow-common
     container_name: ${AIRFLOW_WEBSERVER_CONTAINER_NAME}
+    hostname: ${AIRFLOW_WEBSERVER_HOST:-airflow-webserver}
     command: webserver
     ports:
       - ${AIRFLOW_WEBSERVER_PORT}:8080
@@ -162,6 +166,7 @@ services:
   airflow-scheduler:
     <<: *airflow-common
     container_name: ${AIRFLOW_SCHEDULER_CONTAINER_NAME}
+    hostname: ${AIRFLOW_SCHEDULER_HOST:-airflow-scheduler}
     command: scheduler
     healthcheck:
       test: [ "CMD", "curl", "--fail", "http://localhost:8974/health" ]
@@ -178,6 +183,7 @@ services:
   airflow-worker:
     <<: *airflow-common
     container_name: ${AIRFLOW_WORKER_CONTAINER_NAME}
+    hostname: ${AIRFLOW_WORKER_HOST:-airflow-worker}
     command: celery worker
     healthcheck:
       # yamllint disable rule:line-length
@@ -202,6 +208,7 @@ services:
   airflow-triggerer:
     <<: *airflow-common
     container_name: ${AIRFLOW_TRIGGERER_CONTAINER_NAME}
+    hostname: ${AIRFLOW_TRIGGERER_HOST:-airflow-triggerer}
     command: triggerer
     healthcheck:
       test: [ "CMD-SHELL", 'airflow jobs check --job-type TriggererJob --hostname "$${HOSTNAME}"' ]
@@ -218,6 +225,7 @@ services:
   airflow-init:
     <<: *airflow-common
     container_name: ${AIRFLOW_INIT_CONTAINER_NAME}
+    hostname: ${AIRFLOW_INIT_HOST:-airflow-init}
     entrypoint: /bin/bash
     # yamllint disable rule:line-length
     command:
@@ -283,6 +291,7 @@ services:
   airflow-cli:
     <<: *airflow-common
     container_name: ${AIRFLOW_CLI_CONTAINER_NAME}
+    hostname: ${AIRFLOW_CLI_HOST:-airflow-cli}
     profiles:
       - debug
     environment:
@@ -300,6 +309,7 @@ services:
   flower:
     <<: *airflow-common
     container_name: ${FLOWER_CONTAINER_NAME}
+    hostname: ${FLOWER_HOST:-flower}
     command: celery flower
     profiles:
       - flower
@@ -321,6 +331,7 @@ services:
   warehouse-postgres:
     image: postgres:13
     container_name: ${WAREHOUSE_POSTGRES_CONTAINER_NAME}
+    hostname: ${WAREHOUSE_POSTGRES_HOST:-warehouse-postgres}
     environment:
       POSTGRES_USER: ${WAREHOUSE_POSTGRES_USER}
       POSTGRES_PASSWORD: ${WAREHOUSE_POSTGRES_PASSWORD}
@@ -338,6 +349,7 @@ services:
   # Superset
   superset:
     container_name: ${SUPERSET_CONTAINER_NAME}
+    hostname: ${SUPERSET_HOST:-superset}
     build:
       context: ./superset
       dockerfile: Dockerfile
