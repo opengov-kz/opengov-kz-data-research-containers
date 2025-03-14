@@ -172,3 +172,15 @@ warehouse-postgres   postgres:13             "docker-entrypoint.s…"   warehous
 That's all! You can now start working with the services and access the web interfaces.
 
 --- 
+## Cleanup
+To clean up the environment, remove all containers, images, volumes, and the directories created during the setup process:
+
+```bash
+# Stop and remove all containers, images, volumes, and orphan containers
+docker compose down --rmi all --volumes --remove-orphans
+
+# Remove directories created for Airflow and Superset
+rm -rf ./dags ./logs ./plugins ./config ./superset_home
+```
+
+This will stop and remove all Docker resources related to the project and delete the directories used for configuration and data storage.
