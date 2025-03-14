@@ -86,8 +86,8 @@ services:
     image: dpage/pgadmin4:9.1.0
     container_name: ${PGADMIN_CONTAINER_NAME}
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
     ports:
       - ${CLIENT_PGADMIN_PORT}:80
     restart: always
@@ -95,9 +95,9 @@ services:
     image: postgres:13
     container_name: ${CLIENT_POSTGRES_CONTAINER_NAME}
     environment:
-      POSTGRES_USER: client
-      POSTGRES_PASSWORD: client
-      POSTGRES_DB: client
+      POSTGRES_USER: ${CLIENT_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${CLIENT_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${CLIENT_POSTGRES_DB}
     ports:
       - ${CLIENT_POSTGRES_PORT}:5432
     volumes:
@@ -114,9 +114,9 @@ services:
     image: postgres:13
     container_name: ${AIRFLOW_POSTGRES_CONTAINER_NAME}
     environment:
-      POSTGRES_USER: airflow
-      POSTGRES_PASSWORD: airflow
-      POSTGRES_DB: airflow
+      POSTGRES_USER: ${AIRFLOW_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${AIRFLOW_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${AIRFLOW_POSTGRES_DB}
     volumes:
       - airflow-postgres-db-volume:/var/lib/postgresql/data
     healthcheck:
@@ -146,7 +146,7 @@ services:
     container_name: ${AIRFLOW_WEBSERVER_CONTAINER_NAME}
     command: webserver
     ports:
-      - "8080:8080"
+      - ${AIRFLOW_WEBSERVER_PORT}:8080
     healthcheck:
       test: [ "CMD", "curl", "--fail", "http://localhost:8080/health" ]
       interval: 30s
@@ -322,9 +322,9 @@ services:
     image: postgres:13
     container_name: ${WAREHOUSE_POSTGRES_CONTAINER_NAME}
     environment:
-      POSTGRES_USER: warehouse
-      POSTGRES_PASSWORD: warehouse
-      POSTGRES_DB: warehouse
+      POSTGRES_USER: ${WAREHOUSE_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${WAREHOUSE_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${WAREHOUSE_POSTGRES_DB}
     volumes:
       - warehouse-postgres-db-volume:/var/lib/postgresql/data
     ports:
@@ -343,9 +343,9 @@ services:
       dockerfile: Dockerfile
     restart: always
     environment:
-      ADMIN_USERNAME: admin
-      ADMIN_EMAIL: admin@admin.com
-      ADMIN_PASSWORD: admin
+      ADMIN_USERNAME: ${SUPERSET_ADMIN_USERNAME}
+      ADMIN_EMAIL: ${SUPERSET_ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${SUPERSET_ADMIN_PASSWORD}
     ports:
       - ${SUPERSET_PORT}:8088
     volumes:
