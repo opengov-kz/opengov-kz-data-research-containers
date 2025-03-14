@@ -21,6 +21,26 @@ These are the key environment variables used to configure the services in the sy
 | `WAREHOUSE_POSTGRES_CONTAINER_NAME`  | Warehouse PostgreSQL container name| `warehouse-postgres`         |
 | `SUPERSET_CONTAINER_NAME`            | Superset container name            | `superset`                   |
 
+### Hostnames
+These hostnames are used for internal communication between the containers in the same network. Instead of using exposed ports, containers should reference each other using these hostnames:
+
+| Variable Name                | Hostname                      |
+|------------------------------|-------------------------------|
+| `CLIENT_POSTGRES_HOST`        | `client-postgres`             |
+| `AIRFLOW_POSTGRES_HOST`       | `airflow-postgres`            |
+| `AIRFLOW_REDIS_HOST`          | `airflow-redis`               |
+| `AIRFLOW_WEBSERVER_HOST`      | `airflow-webserver`           |
+| `AIRFLOW_SCHEDULER_HOST`      | `airflow-scheduler`           |
+| `AIRFLOW_WORKER_HOST`         | `airflow-worker`              |
+| `AIRFLOW_TRIGGERER_HOST`      | `airflow-triggerer`           |
+| `AIRFLOW_INIT_HOST`           | `airflow-init`                |
+| `AIRFLOW_CLI_HOST`            | `airflow-cli`                 |
+| `FLOWER_HOST`                 | `flower`                      |
+| `WAREHOUSE_POSTGRES_HOST`     | `warehouse-postgres`          |
+| `SUPERSET_HOST`               | `superset`                    |
+
+These hostnames are used when containers need to communicate with each other inside the Docker network, bypassing the need for external ports.
+
 ### Ports
 
 | Variable Name                | Description                    | Default Value |
