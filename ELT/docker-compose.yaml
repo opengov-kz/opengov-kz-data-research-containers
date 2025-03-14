@@ -322,7 +322,19 @@ services:
       start_period: 5s
     restart: always
   # Superset
-
+  superset:
+    build:
+      context: ./superset
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      ADMIN_USERNAME: admin
+      ADMIN_EMAIL: admin@admin.com
+      ADMIN_PASSWORD: admin
+    ports:
+      - 8081:8088
+    volumes:
+      - ./superset_home:/app/superset_home
 
 volumes:
   client-postgres-db-volume:
