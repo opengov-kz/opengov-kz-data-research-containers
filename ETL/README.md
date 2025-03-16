@@ -113,8 +113,9 @@ Modifying these variables is **optional** based on your requirements.
 - Run the following command to copy the Superset files:
 
 ```bash
+mkdir volumes
 docker create --name temp-superset apache/superset:31e1b63bb3e9f5b3adc289c5580e53d4dcabf277
-docker cp temp-superset:/app/superset_home ./superset_home
+docker cp temp-superset:/app/superset_home ./volumes/superset_home
 docker rm temp-superset
 ```
 
@@ -180,7 +181,9 @@ To clean up the environment, remove all containers, images, volumes, and the dir
 docker compose down --rmi all --volumes --remove-orphans
 
 # Remove directories created for Airflow and Superset
-rm -rf ./dags ./logs ./plugins ./config ./superset_home
+# WARNING: volumes contains database data from client db, from airflow db and warehouse db
+# so be sure to not delete them if you need them
+rm -rf ./dags ./logs ./plugins ./config ./volumes
 ```
 
 This will stop and remove all Docker resources related to the project and delete the directories used for configuration and data storage.

@@ -88,6 +88,8 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+    volumes:
+      - ./volumes/pgadmin:/var/lib/pgadmin
     ports:
       - ${CLIENT_PGADMIN_PORT}:80
     restart: always
@@ -102,7 +104,7 @@ services:
     ports:
       - ${CLIENT_POSTGRES_PORT}:5432
     volumes:
-      - client-postgres-db-volume:/var/lib/postgresql/data
+      - ./volumes/client_postgres:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD", "pg_isready", "-U", "client" ]
       interval: 10s
@@ -120,7 +122,7 @@ services:
       POSTGRES_PASSWORD: ${AIRFLOW_POSTGRES_PASSWORD}
       POSTGRES_DB: ${AIRFLOW_POSTGRES_DB}
     volumes:
-      - airflow-postgres-db-volume:/var/lib/postgresql/data
+      - ./volumes/airflow_postgres:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD", "pg_isready", "-U", "airflow" ]
       interval: 10s
@@ -337,7 +339,7 @@ services:
       POSTGRES_PASSWORD: ${WAREHOUSE_POSTGRES_PASSWORD}
       POSTGRES_DB: ${WAREHOUSE_POSTGRES_DB}
     volumes:
-      - warehouse-postgres-db-volume:/var/lib/postgresql/data
+      - ./volumes/warehouse_postgres:/var/lib/postgresql/data
     ports:
       - ${WAREHOUSE_POSTGRES_PORT}:5432
     healthcheck:
@@ -361,9 +363,4 @@ services:
     ports:
       - ${SUPERSET_PORT}:8088
     volumes:
-      - ./superset_home:/app/superset_home
-
-volumes:
-  client-postgres-db-volume:
-  airflow-postgres-db-volume:
-  warehouse-postgres-db-volume:
+      - ./volumes/superset_home:/app/superset_home
